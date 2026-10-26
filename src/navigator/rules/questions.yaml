@@ -1,0 +1,249 @@
+# Questions shared by all regulations.
+#
+# Yes/no questions are ticked or not. Choice questions have options.
+# Facts are named conditions reused by several rule files (referenced as $name).
+# Written for an organisation established in Denmark; EU-wide rules are cited to the regulation.
+# Screening aid, not legal advice.
+
+version: "2026.10"
+last_reviewed: "2026-10-26"
+
+sections:
+  - id: org
+    title: "1. Your organisation"
+    intro: Size decides whether NIS2 applies and how much DORA asks of you. Count the whole group if you are part of one.
+  - id: sector
+    title: "2. What you do"
+    intro: Tick every activity your organisation carries out. These are the sectors in NIS2 Annex I and II.
+  - id: finance
+    title: "3. Financial services"
+    intro: Tick any that describe you. These decide whether DORA applies.
+  - id: ai
+    title: "4. The AI use case"
+    intro: Answer for one AI system or use case at a time.
+  - id: data
+    title: "5. Personal data"
+    intro: About the personal data the AI use case processes.
+
+questions:
+  # --- 1. Organisation ---------------------------------------------------------------
+  - id: staff_50
+    section: org
+    text: 50 or more employees
+  - id: money_10
+    section: org
+    text: Annual turnover and balance sheet total both above EUR 10 million
+  - id: staff_250
+    section: org
+    text: 250 or more employees
+  - id: money_large
+    section: org
+    text: Annual turnover above EUR 50 million and balance sheet total above EUR 43 million
+  - id: micro
+    section: org
+    text: Fewer than 10 employees, and turnover or balance sheet total of EUR 2 million or less
+  - id: public_central
+    section: org
+    text: We are a central government authority
+  - id: public_other
+    section: org
+    text: We are a regional or local public authority (region, municipality) or another public body
+
+  # --- 2. NIS2 sectors ---------------------------------------------------------------
+  - id: s_energy
+    section: sector
+    text: Energy (electricity, district heating or cooling, oil, gas, hydrogen)
+  - id: s_transport
+    section: sector
+    text: Transport (air, rail, water or road, including ports, airports and traffic management)
+  - id: s_health
+    section: sector
+    text: Healthcare provider, EU reference laboratory, pharmaceutical R&D or manufacturing, critical medical devices
+  - id: s_water
+    section: sector
+    text: Drinking water or waste water
+  - id: s_digital_infra
+    section: sector
+    text: Digital infrastructure (internet exchange, cloud computing, data centre, content delivery network)
+  - id: s_telecom
+    section: sector
+    text: Public electronic communications networks or services (telecom, internet access)
+  - id: s_dns_trust
+    section: sector
+    text: DNS service, top-level domain registry, or qualified trust service provider
+  - id: s_managed_it
+    section: sector
+    text: Managed IT services or managed security services for other businesses
+  - id: s_space
+    section: sector
+    text: Ground infrastructure for space-based services
+  - id: s_postal
+    section: sector
+    text: Postal and courier services
+  - id: s_waste
+    section: sector
+    text: Waste management
+  - id: s_chemicals
+    section: sector
+    text: Manufacture, production or distribution of chemicals
+  - id: s_food
+    section: sector
+    text: Wholesale, industrial production or processing of food
+  - id: s_manufacturing
+    section: sector
+    text: Manufacturing of medical devices, computers and electronics, electrical equipment, machinery, vehicles or other transport equipment
+  - id: s_digital_providers
+    section: sector
+    text: Online marketplace, search engine or social networking platform
+  - id: s_research
+    section: sector
+    text: Research organisation
+
+  # --- 3. Financial entities (DORA Art. 2) ------------------------------------------
+  - id: f_bank
+    section: finance
+    text: Bank (credit institution)
+  - id: f_payment
+    section: finance
+    text: Payment institution, e-money institution or account information service provider
+  - id: f_investment
+    section: finance
+    text: Investment firm, fund manager (AIF or UCITS) or crowdfunding service provider
+  - id: f_insurer
+    section: finance
+    text: Insurance or reinsurance undertaking
+  - id: f_intermediary
+    section: finance
+    text: Insurance or reinsurance intermediary (broker, agent)
+  - id: f_pension
+    section: finance
+    text: Occupational pension fund (IORP, e.g. a pensionskasse)
+  - id: f_crypto
+    section: finance
+    text: Crypto-asset service provider or issuer of asset-referenced tokens
+  - id: f_infrastructure
+    section: finance
+    text: Market infrastructure or other (trading venue, CSD, CCP, trade repository, credit rating agency, critical benchmark administrator, securitisation repository, data reporting service provider)
+  - id: f_small_insurer
+    section: finance
+    text: We are a small insurer outside Solvency II (Directive 2009/138/EC, Art. 4)
+    show_if: f_insurer
+  - id: f_small_pension
+    section: finance
+    text: Our pension schemes together have 15 members or fewer
+    show_if: f_pension
+  - id: f_small_aifm
+    section: finance
+    text: We are a small fund manager below the AIFMD thresholds (Directive 2011/61/EU, Art. 3(2))
+    show_if: f_investment
+
+  # --- 4. AI use case ----------------------------------------------------------------
+  - id: ai_tier
+    section: ai
+    text: EU AI Act risk tier of this AI use case
+    help: Not sure? Classify it with the EU AI Act Risk Check first.
+    options:
+      - {id: prohibited, label: Prohibited}
+      - {id: high, label: High risk}
+      - {id: limited, label: Transparency obligations}
+      - {id: minimal, label: Minimal risk}
+      - {id: out_of_scope, label: Out of scope}
+      - {id: unknown, label: Not classified yet}
+  - id: ai_role
+    section: ai
+    text: Your role
+    options:
+      - {id: deployer, label: "Deployer: we use it under our authority"}
+      - {id: provider, label: "Provider: we develop it and put it on the market under our name"}
+  - id: ai_vendor
+    section: ai
+    text: The AI system or model is bought from an external vendor or used as a cloud service
+  - id: ai_critical
+    section: ai
+    text: The AI system supports a critical or important function, or a service we must keep running
+    help: Under DORA, a function whose disruption would materially impair your performance, soundness or continuity.
+  - id: ai_credit_insurance
+    section: ai
+    text: It is used to assess creditworthiness, or for risk assessment and pricing in life or health insurance
+    show_if: ai_tier=high
+
+  # --- 5. Personal data --------------------------------------------------------------
+  - id: pd
+    section: data
+    text: The AI use case processes personal data
+  - id: pd_evaluation
+    section: data
+    text: It evaluates or scores people (profiling, predicting performance, behaviour, health, reliability or creditworthiness)
+    show_if: pd
+  - id: pd_automated
+    section: data
+    text: It makes decisions with legal or similarly significant effects without meaningful human involvement
+    show_if: pd
+  - id: pd_monitoring
+    section: data
+    text: It systematically monitors people (employees, customers, public spaces)
+    show_if: pd
+  - id: pd_special
+    section: data
+    text: It processes sensitive data (health, biometric identification, ethnicity, religion, union membership, sexual orientation) or criminal data
+    show_if: pd
+  - id: pd_large_scale
+    section: data
+    text: It processes data about many people, or a large part of a population
+    show_if: pd
+  - id: pd_combining
+    section: data
+    text: It matches or combines datasets from different sources or purposes
+    show_if: pd
+  - id: pd_vulnerable
+    section: data
+    text: It concerns vulnerable people (employees, children, patients, elderly, people in a weak position)
+    show_if: pd
+  - id: pd_new_tech
+    section: data
+    text: It uses new technology in a new way, so its effects on people are not yet well understood
+    help: Many uses of AI count, for example generative AI on personal data or AI that makes predictions about people.
+    show_if: pd
+  - id: pd_blocks
+    section: data
+    text: It can stop people from getting a service, a contract or a benefit
+    show_if: pd
+  - id: pd_outside_eu
+    section: data
+    text: Personal data may be transferred outside the EU/EEA
+    show_if: pd
+
+facts:
+  medium: {any: [staff_50, money_10, staff_250, money_large]}
+  large: {any: [staff_250, money_large]}
+  annex_i: {any: [s_energy, s_transport, s_health, s_water, s_digital_infra, s_telecom, s_dns_trust, s_managed_it, s_space, public_central, public_other]}
+  annex_ii: {any: [s_postal, s_waste, s_chemicals, s_food, s_manufacturing, s_digital_providers, s_research]}
+  nis2_sector: {any: [$annex_i, $annex_ii]}
+  financial: {any: [f_bank, f_payment, f_investment, f_insurer, f_intermediary, f_pension, f_crypto, f_infrastructure]}
+  ai_in_scope: {any: [ai_tier=prohibited, ai_tier=high, ai_tier=limited, ai_tier=minimal]}
+  high_deployer: {all: [ai_tier=high, {not: ai_role=provider}]}
+  fria: {all: [$high_deployer, {any: [public_central, public_other, ai_credit_insurance]}]}
+  # EDPB guidelines on DPIA (WP248 rev.01): processing meeting two or more criteria in most cases needs a DPIA
+  wp248_criteria: {at_least: {n: 2, of: [pd_evaluation, pd_automated, pd_monitoring, pd_special, pd_large_scale, pd_combining, pd_vulnerable, pd_new_tech, pd_blocks]}}
+  wp248_one: {any: [pd_evaluation, pd_automated, pd_monitoring, pd_special, pd_large_scale, pd_combining, pd_vulnerable, pd_new_tech, pd_blocks]}
+
+# Links to the rest of the toolkit, used by obligations with `tool:`
+tools:
+  risk_check:
+    label: EU AI Act Risk Check
+    url: https://ai-act-risk-check.streamlit.app
+  contract_checker:
+    label: AI Contract Clause Checker
+    url: https://contract-clause-checker.streamlit.app
+  contract_checker_dora:
+    label: AI Contract Clause Checker, DORA pack
+    url: https://contract-clause-checker.streamlit.app
+  register:
+    label: AI Use Case Register
+    url: https://ai-use-case-register.streamlit.app
+  framework:
+    label: Practical AI Governance Framework
+    url: https://github.com/gifmaster/ai-governance-framework
+  incident_clock:
+    label: Incident Clock
+    url: https://regulation-navigator.streamlit.app

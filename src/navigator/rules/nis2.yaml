@@ -1,0 +1,133 @@
+# NIS2: Directive (EU) 2022/2555, as implemented in Denmark.
+#
+# Danish implementation (sources in docs/SOURCES.md):
+#   Act No. 434 of 6 May 2025 on measures to ensure a high level of cybersecurity (most sectors), in force 1 July 2025
+#   Act No. 258 of 6 March 2025 on security and preparedness in the energy sector, in force 7 March 2025
+#   Act No. 435 of 6 May 2025 on security and preparedness in the telecom sector, in force 1 July 2025
+#   Banking and financial market infrastructure: DORA applies (NIS2 Art. 4), and the Financial Business Act
+#   covers financial digital infrastructure.
+# In Denmark the NIS2 size threshold does not apply to energy and telecom companies.
+#
+# Read top to bottom: the first rule with a status decides.
+
+title: NIS2
+short: NIS2
+source: Directive (EU) 2022/2555; Danish Act No. 434, 435 and 258 of 2025
+authority: Styrelsen for Samfundssikkerhed (central NIS2 authority) and your sector authority
+default_reason: Not in a NIS2 sector.
+
+rules:
+  - id: nis2.financial
+    when: {all: ['@dora', {not: $nis2_sector}]}
+    status: not_applicable
+    title: DORA applies instead
+    reason: For financial entities, DORA is the sector-specific law that takes the place of NIS2 for ICT risk management and incident reporting.
+    cite: Art. 4 and recital 28; DORA Art. 1
+
+  - id: nis2.no_sector
+    when: {not: $nis2_sector}
+    status: not_applicable
+    title: Not in a NIS2 sector
+    reason: None of your activities are in the sectors listed in NIS2 Annex I or II. If you supply companies that are covered, expect their supply chain requirements.
+    cite: Art. 2(1); Annex I and II
+
+  - id: nis2.dns_trust
+    when: s_dns_trust
+    status: applies
+    title: Essential entity
+    reason: DNS service providers, top-level domain registries and qualified trust service providers are essential entities regardless of size.
+    cite: Art. 2(2)(a), 3(1)(b)
+
+  - id: nis2.telecom_medium
+    when: {all: [s_telecom, $medium]}
+    status: applies
+    title: Essential entity
+    reason: Providers of public electronic communications that are medium-sized or larger are essential entities. In Denmark, the telecom act applies.
+    cite: Art. 3(1)(c); Danish Act No. 435 of 2025
+
+  - id: nis2.telecom_small
+    when: s_telecom
+    status: applies
+    title: Important entity
+    reason: Providers of public electronic communications are in scope regardless of size. In Denmark, the telecom act applies.
+    cite: Art. 2(2)(a), 3(2); Danish Act No. 435 of 2025
+
+  - id: nis2.energy_dk_large
+    when: {all: [s_energy, $large]}
+    status: applies
+    title: Essential entity
+    reason: Large entities in an Annex I sector are essential entities. In Denmark, the energy act applies.
+    cite: Art. 3(1)(a); Danish Act No. 258 of 2025
+
+  - id: nis2.energy_dk
+    when: s_energy
+    status: applies
+    title: In scope under the Danish energy act
+    reason: Denmark does not apply the NIS2 size threshold to the energy sector, so smaller energy companies are covered as well.
+    cite: Danish Act No. 258 of 2025
+
+  - id: nis2.public_central
+    when: public_central
+    status: applies
+    title: Essential entity
+    reason: Public administration entities of central government are essential entities.
+    cite: Art. 2(2)(f)(i), 3(1)(d)
+
+  - id: nis2.public_other
+    when: public_other
+    status: check
+    title: Check with your authority
+    reason: Whether regional and local public bodies are covered is a national choice. Check the Danish act and your sector authority.
+    cite: Art. 2(2)(f)(ii), 2(5)
+
+  - id: nis2.annex_i_large
+    when: {all: [$annex_i, $large]}
+    status: applies
+    title: Essential entity
+    reason: Large entities in a sector of high criticality (Annex I) are essential entities.
+    cite: Art. 2(1), 3(1)(a); Annex I
+
+  - id: nis2.annex_i_medium
+    when: {all: [$annex_i, $medium]}
+    status: applies
+    title: Important entity
+    reason: Medium-sized entities in a sector of high criticality (Annex I) are important entities.
+    cite: Art. 2(1), 3(2); Annex I
+
+  - id: nis2.annex_ii
+    when: {all: [$annex_ii, $medium]}
+    status: applies
+    title: Important entity
+    reason: Medium-sized and large entities in other critical sectors (Annex II) are important entities.
+    cite: Art. 2(1), 3(2); Annex II
+
+  - id: nis2.small
+    when: $nis2_sector
+    status: not_applicable
+    title: Below the size threshold
+    reason: Your sector is covered, but small and micro enterprises are not, unless the authorities designate you, for example as the sole provider of an essential service. If you supply in-scope companies, expect their supply chain requirements.
+    cite: Art. 2(1), 2(2)(b) to (e)
+
+  # --- Duties -----------------------------------------------------------------------
+
+  - id: nis2.duties
+    when: {any: [$nis2_sector, s_dns_trust, s_telecom]}
+    cite: Art. 20, 21, 23, 27
+    obligations:
+      - text: Register with the authorities (under the general act via virk.dk; the deadline for existing entities was 1 October 2025)
+        cite: Art. 3(4); Danish Act No. 434 of 2025
+      - text: The management body approves the cybersecurity risk measures, oversees them and takes part in training
+        cite: Art. 20
+      - text: Take the minimum security measures, including risk analysis, incident handling, business continuity, supply chain security and access control
+        cite: Art. 21(2)
+      - text: "Report significant incidents: early warning within 24 hours, notification within 72 hours, final report within one month"
+        cite: Art. 23(4)
+        tool: incident_clock
+
+  - id: nis2.ai_supply_chain
+    when: {all: [{any: [$nis2_sector, s_dns_trust, s_telecom]}, ai_vendor]}
+    cite: Art. 21(2)(d), 21(3)
+    obligations:
+      - text: Treat the AI vendor as part of your supply chain, and assess its security practices and the risks of the AI service
+        cite: Art. 21(2)(d), 21(3)
+        tool: contract_checker

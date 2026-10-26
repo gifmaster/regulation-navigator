@@ -1,0 +1,184 @@
+# Acceptance cases: realistic organisations and AI use cases, with the result a person
+# who knows the regulations would expect. Written from the legal texts, not from the tool's output.
+#
+# expect: status per regulation (applies, check, not_applicable), optionally with the title
+# overlaps: overlap rule ids that must appear (others may appear too unless overlaps_exact: true)
+# obligations: snippets that must appear among the obligations of that regulation
+
+cases:
+  - id: food_manufacturer_cv_screening
+    story: Danish food producer, 120 staff, buys an AI tool that screens job applicants
+    answers: {staff_50: true, s_food: true, ai_tier: high, ai_role: deployer, ai_vendor: true,
+              pd: true, pd_evaluation: true, pd_vulnerable: true, pd_new_tech: true}
+    expect:
+      ai_act: [applies, "High risk, deployer duties"]
+      gdpr: [applies, "GDPR applies, DPIA required"]
+      dora: [not_applicable]
+      nis2: [applies, "Important entity"]
+    overlaps: [overlap.dpia_and_ai_act, overlap.nis2_ai_vendor, overlap.incident_clocks, overlap.management_training, overlap.logs]
+    obligations:
+      ai_act: ["at least six months", "workers' representatives"]
+      nis2: ["supply chain"]
+
+  - id: accounting_firm_copilot
+    story: Accounting firm, 30 staff, uses a general AI assistant for drafting
+    answers: {ai_tier: minimal, ai_role: deployer, ai_vendor: true, pd: true}
+    expect:
+      ai_act: [applies, "Minimal risk"]
+      gdpr: [applies, "GDPR applies, DPIA not indicated"]
+      dora: [not_applicable]
+      nis2: [not_applicable]
+    overlaps: []
+    overlaps_exact: true
+    obligations:
+      ai_act: ["AI literacy"]
+      gdpr: ["data processing agreement"]
+
+  - id: pension_fund_member_service
+    story: Pension fund (IORP), 80 staff, AI drafts answers to members, supports a critical function
+    answers: {staff_50: true, f_pension: true, ai_tier: limited, ai_role: deployer, ai_vendor: true, ai_critical: true,
+              pd: true, pd_large_scale: true}
+    expect:
+      ai_act: [applies, "Transparency obligations"]
+      gdpr: [applies, "GDPR applies, DPIA probably not required"]
+      dora: [applies, "Financial entity under DORA"]
+      nis2: [not_applicable, "DORA applies instead"]
+    overlaps: [overlap.dora_ai_vendor, overlap.incident_clocks, overlap.management_training]
+    obligations:
+      dora: ["register of information", "Art. 30(3)", "exit strategy"]
+
+  - id: tiny_pension_scheme
+    story: Company pension scheme with 12 members
+    answers: {f_pension: true, f_small_pension: true, ai_tier: minimal, ai_vendor: true}
+    expect:
+      dora: [not_applicable, "Exempt from DORA"]
+      nis2: [not_applicable]
+
+  - id: small_insurance_broker
+    story: Insurance broker, 40 staff
+    answers: {f_intermediary: true, ai_tier: minimal, ai_vendor: true}
+    expect:
+      dora: [not_applicable, "Exempt from DORA"]
+
+  - id: large_insurance_broker
+    story: Insurance broker group, 400 staff
+    answers: {staff_50: true, staff_250: true, f_intermediary: true, ai_tier: minimal, ai_vendor: true}
+    expect:
+      dora: [applies]
+
+  - id: insurer_life_pricing
+    story: Life insurer, 300 staff, buys an AI model for risk assessment and pricing
+    answers: {staff_50: true, staff_250: true, f_insurer: true, ai_tier: high, ai_role: deployer, ai_vendor: true,
+              ai_credit_insurance: true, ai_critical: true, pd: true, pd_evaluation: true, pd_special: true, pd_large_scale: true}
+    expect:
+      ai_act: [applies, "High risk, deployer duties"]
+      gdpr: [applies, "GDPR applies, DPIA required"]
+      dora: [applies]
+      nis2: [not_applicable, "DORA applies instead"]
+    overlaps: [overlap.fria_dpia, overlap.dpia_and_ai_act, overlap.dora_ai_vendor, overlap.incident_clocks]
+    obligations:
+      ai_act: ["fundamental rights impact assessment"]
+      gdpr: ["Art. 9"]
+
+  - id: bank_credit_scoring_own_model
+    story: Bank builds its own credit scoring model and uses it
+    answers: {staff_50: true, staff_250: true, f_bank: true, ai_tier: high, ai_role: provider, pd: true,
+              pd_evaluation: true, pd_automated: true, pd_large_scale: true}
+    expect:
+      ai_act: [applies, "High risk, provider duties"]
+      gdpr: [applies, "GDPR applies, DPIA required"]
+      dora: [applies]
+      nis2: [not_applicable]
+    obligations:
+      ai_act: ["conformity assessment"]
+      gdpr: ["Art. 22(2)"]
+
+  - id: managed_service_provider
+    story: Managed IT service provider, 60 staff, uses an AI tool to triage support tickets
+    answers: {staff_50: true, s_managed_it: true, ai_tier: minimal, ai_vendor: true, pd: true}
+    expect:
+      nis2: [applies, "Important entity"]
+      dora: [not_applicable]
+    overlaps: [overlap.nis2_ai_vendor, overlap.management_training, overlap.incident_clocks]
+
+  - id: large_managed_service_provider
+    story: Managed IT service provider, 300 staff
+    answers: {staff_50: true, staff_250: true, s_managed_it: true, ai_tier: minimal}
+    expect:
+      nis2: [applies, "Essential entity"]
+
+  - id: small_dns_provider
+    story: DNS service provider, 6 staff
+    answers: {s_dns_trust: true, ai_tier: minimal}
+    expect:
+      nis2: [applies, "Essential entity"]
+
+  - id: small_telecom
+    story: Local internet provider, 20 staff
+    answers: {s_telecom: true, ai_tier: limited, ai_vendor: true}
+    expect:
+      nis2: [applies, "Important entity"]
+
+  - id: small_energy_dk
+    story: Small district heating company, 15 staff, in Denmark
+    answers: {s_energy: true, ai_tier: minimal}
+    expect:
+      nis2: [applies, "In scope under the Danish energy act"]
+
+  - id: small_food_producer
+    story: Food producer, 25 staff, turnover EUR 6 million
+    answers: {s_food: true, ai_tier: minimal, pd: true}
+    expect:
+      nis2: [not_applicable, "Below the size threshold"]
+
+  - id: turnover_alone_is_not_enough
+    story: Food producer, 30 staff, turnover above EUR 10 million but balance sheet below
+    answers: {s_food: true, ai_tier: minimal}
+    expect:
+      nis2: [not_applicable]
+
+  - id: hospital_large
+    story: Private hospital, 600 staff, AI support for triage
+    answers: {staff_50: true, staff_250: true, s_health: true, ai_tier: high, ai_role: deployer, ai_vendor: true,
+              pd: true, pd_special: true, pd_large_scale: true, pd_vulnerable: true}
+    expect:
+      nis2: [applies, "Essential entity"]
+      gdpr: [applies, "GDPR applies, DPIA required"]
+
+  - id: municipality_chatbot
+    story: Municipality, citizen service chatbot
+    answers: {staff_50: true, staff_250: true, public_other: true, ai_tier: limited, ai_vendor: true, pd: true}
+    expect:
+      nis2: [check]
+      ai_act: [applies, "Transparency obligations"]
+
+  - id: central_government_benefits
+    story: Central government agency uses a high-risk AI system to assess eligibility for benefits
+    answers: {staff_50: true, staff_250: true, public_central: true, ai_tier: high, ai_role: deployer, ai_vendor: true,
+              pd: true, pd_evaluation: true, pd_blocks: true, pd_large_scale: true}
+    expect:
+      nis2: [applies, "Essential entity"]
+      ai_act: [applies, "High risk, deployer duties"]
+    overlaps: [overlap.fria_dpia]
+    obligations:
+      ai_act: ["fundamental rights impact assessment", "EU database"]
+
+  - id: not_classified_yet
+    story: Company has not classified its AI system yet
+    answers: {ai_tier: unknown}
+    expect:
+      ai_act: [check, "Classify the AI system first"]
+      gdpr: [not_applicable]
+
+  - id: prohibited_practice
+    story: Emotion recognition of employees at work
+    answers: {ai_tier: prohibited, pd: true, pd_monitoring: true, pd_vulnerable: true, pd_special: true}
+    expect:
+      ai_act: [applies, "Prohibited practice"]
+      gdpr: [applies, "GDPR applies, DPIA required"]
+
+  - id: out_of_scope
+    story: AI used solely for scientific research
+    answers: {ai_tier: out_of_scope}
+    expect:
+      ai_act: [not_applicable]
