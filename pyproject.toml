@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "AGPL-3.0-only"}
 authors = [{name = "Alexander Senderovitz", email = "alexander@senderovitz.eu"}]
-dependencies = ["pyyaml>=6.0"]
+dependencies = ["pyyaml>=6.0", "fpdf2>=2.8"]
 
 [project.optional-dependencies]
 app = ["streamlit>=1.50,<2"]
@@ -20,7 +20,7 @@ dev = ["pytest>=8", "streamlit>=1.50,<2"]
 where = ["src"]
 
 [tool.setuptools.package-data]
-navigator = ["rules/*.yaml"]
+navigator = ["rules/*.yaml", "fonts/*.ttf", "fonts/*.txt"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
