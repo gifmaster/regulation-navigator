@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Which EU rules apply to your AI use case: AI Act, GDPR, NIS2 and DORA"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = {text = "AGPL-3.0-only"}
 authors = [{name = "Alexander Senderovitz", email = "alexander@senderovitz.eu"}]
 dependencies = ["pyyaml>=6.0"]
 
