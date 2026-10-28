@@ -13,6 +13,7 @@ Answer questions about your organisation and one AI use case, and get:
 - **What to do** under each one, with dates for duties that are not in force yet
 - **Where they overlap**, so one piece of work serves several laws: one DPIA for GDPR and the AI Act, one contract review for DORA, GDPR and the AI Act, one management training for NIS2, DORA and AI literacy
 - An **Incident Clock**: when something goes wrong, every reporting deadline that starts, in order
+- Both as a **PDF** to share or print, or as Markdown
 
 ![Screenshot](docs/screenshot.png)
 
@@ -92,7 +93,7 @@ pip install pytest
 pytest
 ```
 
-62 tests, including:
+68 tests, including:
 
 - **21 [acceptance cases](tests/acceptance_cases.yaml)**: realistic organisations (a 6-person DNS provider, a pension scheme with 12 members, a life insurer pricing with AI, a municipality chatbot) with the result written from the legal texts. Edge cases include turnover alone not making a company medium-sized, small insurance brokers being exempt from DORA, and small Danish energy companies being covered by NIS2 anyway
 - every regulation reaching a decision even when nothing is answered

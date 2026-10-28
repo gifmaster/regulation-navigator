@@ -19,6 +19,7 @@ from navigator import Navigator, evaluate, to_markdown  # noqa: E402
 from navigator.engine import STATUSES, checker  # noqa: E402
 from navigator.incidents import REGIME_NAMES, IncidentRules, timeline  # noqa: E402
 from navigator.incidents import to_markdown as incident_markdown  # noqa: E402
+from navigator.pdf import markdown_to_pdf  # noqa: E402
 
 REPO = "https://github.com/gifmaster/regulation-navigator"
 ICON = {"applies": "🟥", "check": "🟨", "not_applicable": "⬜"}
@@ -125,6 +126,8 @@ with tab_nav:
                         tool = f" → [{NAV.tools[ob.tool]['label']}]({NAV.tools[ob.tool]['url']})" if ob.tool else ""
                         st.markdown(f"- {ob.text}{tool}")
         report = to_markdown(NAV, result, st.session_state.get("use_case", ""), st.session_state.get("org", ""))
+        st.download_button("Download report (PDF)", markdown_to_pdf(report, "Regulation Navigator"),
+                           "regulation-navigator.pdf", "application/pdf", type="primary", width="stretch", key="dl_report_pdf")
         st.download_button("Download report (Markdown)", report, "regulation-navigator.md", "text/markdown",
                            width="stretch", key="dl_report")
         st.caption("Screening aid, not legal advice. Every result cites the rule behind it.")
@@ -177,8 +180,12 @@ with tab_clock:
                             + ("" if d.in_force else f" · *applies from {d.applies_from:%-d %b %Y}*"))
                 st.markdown(f"To: {d.to}  \n{d.note}  \n`{d.cite}` · {d.basis}" + (f" · {left_txt}" if left_txt else ""))
         if deadlines:
-            st.download_button("Download deadlines (Markdown)", incident_markdown(deadlines, aware),
-                               "incident-deadlines.md", "text/markdown", key="dl_clock")
+            clock = incident_markdown(deadlines, aware)
+            st.download_button("Download deadlines (PDF)", markdown_to_pdf(clock, "Regulation Navigator: Incident Clock"),
+                               "incident-deadlines.pdf", "application/pdf", type="primary", key="dl_clock_pdf",
+                               help="Print it or send it to the people handling the incident.")
+            st.download_button("Download deadlines (Markdown)", clock, "incident-deadlines.md", "text/markdown",
+                               key="dl_clock")
         st.caption("Chained deadlines assume the earlier report was sent at its deadline. Weekend and bank holiday relief "
                    "is not applied. Screening aid, not legal advice.")
 
