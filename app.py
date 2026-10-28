@@ -64,7 +64,7 @@ if "q_ai_tier" not in st.session_state:
     st.session_state.use_case = next(iter(EXAMPLES))
 
 st.title("Regulation Navigator")
-st.caption("Built by [Alexander Senderovitz](https://senderovitz.eu)")
+st.caption(f"Built by [Alexander Senderovitz](https://senderovitz.eu) · Rules last reviewed {NAV.last_reviewed}")
 st.caption("Which EU rules apply to your AI use case: the EU AI Act, GDPR, NIS2 and DORA, where they overlap, "
            "and what to do. Written for organisations in Denmark.")
 st.info("**Scope.** The EU regulations (AI Act, GDPR, DORA) and their deadlines are the same in every member state. "
@@ -130,7 +130,7 @@ with tab_nav:
                         tool = f" → [{NAV.tools[ob.tool]['label']}]({NAV.tools[ob.tool]['url']})" if ob.tool else ""
                         st.markdown(f"- {ob.text}{tool}")
         report = to_markdown(NAV, result, st.session_state.get("use_case", ""), st.session_state.get("org", ""))
-        st.download_button("Download report (PDF)", markdown_to_pdf(report, "Regulation Navigator"),
+        st.download_button("Download report (PDF)", markdown_to_pdf(report, "Regulation Navigator", reviewed=NAV.last_reviewed),
                            "regulation-navigator.pdf", "application/pdf", type="primary", width="stretch", key="dl_report_pdf")
         st.download_button("Download report (Markdown)", report, "regulation-navigator.md", "text/markdown",
                            width="stretch", key="dl_report")
@@ -201,7 +201,7 @@ with tab_clock:
                 st.markdown(f"To: {d.to}  \n{d.note}  \n`{d.cite}` · {d.basis}" + (f" · {left_txt}" if left_txt else ""))
         if deadlines:
             clock = incident_markdown(deadlines, aware)
-            st.download_button("Download deadlines (PDF)", markdown_to_pdf(clock, "Regulation Navigator: Incident Clock"),
+            st.download_button("Download deadlines (PDF)", markdown_to_pdf(clock, "Regulation Navigator: Incident Clock", reviewed=NAV.last_reviewed),
                                "incident-deadlines.pdf", "application/pdf", type="primary", key="dl_clock_pdf",
                                help="Print it or send it to the people handling the incident.")
             st.download_button("Download deadlines (Markdown)", clock, "incident-deadlines.md", "text/markdown",
