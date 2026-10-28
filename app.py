@@ -65,6 +65,9 @@ if "q_ai_tier" not in st.session_state:
 st.title("Regulation Navigator")
 st.caption("Which EU rules apply to your AI use case: the EU AI Act, GDPR, NIS2 and DORA, where they overlap, "
            "and what to do. Written for organisations in Denmark.")
+st.info("**Scope.** The EU regulations (AI Act, GDPR, DORA) and their deadlines are the same in every member state. "
+        "The authorities named here are Danish, and Danish national rules such as the NIS2 implementing act are not fully modelled. "
+        "Outside Denmark, treat the authority names and national details as examples and check your own country.")
 
 tab_nav, tab_clock, tab_about = st.tabs(["Navigator", "Incident Clock", "How it works"])
 
@@ -133,6 +136,22 @@ with tab_nav:
 with tab_clock:
     st.markdown("When an incident hits, several reporting clocks can start at once. Enter when you became aware, "
                 "and what kind of incident it is.")
+    with st.expander("Not sure whether it is reportable? What starts each clock"):
+        st.markdown(
+            "This tool does not decide whether your incident meets a threshold. These are the tests the law uses, so you can decide and then tick the box.\n\n"
+            "- **GDPR, when you are 'aware'** (Art. 33). The clock starts when you have a reasonable degree of certainty that a security incident has "
+            "compromised personal data, not when the investigation is finished (EDPB Guidelines 9/2022). Notification to the authority is not needed if the breach is "
+            "unlikely to result in a risk to people. Telling the people affected is needed only when the risk is high (Art. 34).\n"
+            "- **NIS2, 'significant incident'** (Art. 23(3)). One of two things: the incident has caused or can cause severe operational disruption or financial loss "
+            "for your organisation, or it has affected or can affect other people by causing considerable material or non-material damage. For some digital "
+            "service providers, Implementing Regulation (EU) 2024/2690 sets more specific criteria. Check with your Danish sector authority.\n"
+            "- **DORA, 'major incident'** (Art. 18). Classify it using these criteria: clients, financial counterparts and transactions affected, "
+            "reputational impact, duration and service downtime, geographical spread, data losses, criticality of the services affected, and economic impact. "
+            "The thresholds are in Commission Delegated Regulation (EU) 2024/1772. The clock for the first notification runs from the moment you classify it as major.\n"
+            "- **AI Act, 'serious incident'** (Art. 3(49), Art. 73). Only for high-risk AI systems. Report when you establish, or it is reasonably likely, that "
+            "your system caused the incident.\n\n"
+            "If in doubt whether a threshold is met, many organisations notify and explain, rather than wait. That is a judgement for you or your lawyer."
+        )
     a, b = st.columns([2, 3], gap="large")
     with a:
         applies = st.session_state.get("applies", [])
@@ -194,6 +213,13 @@ to bottom, and the first matching rule decides the result. Every rule cites its 
 **What it does not do.** It does not classify the AI system under the AI Act; the
 [EU AI Act Risk Check](https://ai-act-risk-check.streamlit.app) does that. It does not cover national options in full,
 sector-specific Danish rules for energy and telecom in detail, or the Digital Omnibus proposals that are not yet adopted.
+
+**Limits.**
+- It is a screening aid built on a fixed set of questions. It cannot see your facts, so wrong answers give wrong results.
+- It covers Denmark: Danish authorities are named, and Danish national law (NIS2 act, sector rules for energy, telecom and health) is not fully modelled. Deadlines in the EU regulations hold in every member state, but national options differ.
+- The Incident Clock shows the EU deadlines. It does not apply weekend or bank holiday relief, and chained deadlines assume you reported at the last moment.
+- Digital Omnibus proposals that are not yet adopted are not included.
+- Not legal advice. Confirm any result that matters with a lawyer.
 
 **Your data.** Nothing is stored. Rules last reviewed {NAV.last_reviewed}.
 
