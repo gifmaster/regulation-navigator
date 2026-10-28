@@ -50,3 +50,10 @@ def test_incident_clock_uses_navigator_result():
     assert not at.exception
     t = text(at)
     assert "Notify Datatilsynet" in t and "Early warning" in t
+
+
+def test_scope_and_limits_are_visible():
+    at = run()
+    assert any("Scope." in i.value and "Danish" in i.value for i in at.info)
+    assert any("reportable" in e.label for e in at.expander)
+    assert "Limits." in text(at)
