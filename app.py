@@ -64,6 +64,7 @@ if "q_ai_tier" not in st.session_state:
     st.session_state.use_case = next(iter(EXAMPLES))
 
 st.title("Regulation Navigator")
+st.caption("Built by [Alexander Senderovitz](https://senderovitz.eu)")
 st.caption("Which EU rules apply to your AI use case: the EU AI Act, GDPR, NIS2 and DORA, where they overlap, "
            "and what to do. Written for organisations in Denmark.")
 st.info("**Scope.** The EU regulations (AI Act, GDPR, DORA) and their deadlines are the same in every member state. "
