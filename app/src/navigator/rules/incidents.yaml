@@ -1,0 +1,165 @@
+# Incident Clock: reporting deadlines that can run at the same time.
+#
+# Each clock has:
+#   when      condition on the incident type questions below, and on which regulations apply (@regime)
+#   after     what the deadline counts from: aware (you became aware), classified (you classified it as major),
+#             or the id of an earlier clock (its deadline, assuming you report at the last moment)
+#   hours / days / months   the time limit; with `or_hours_after_aware`, the earlier of the two applies
+#   to        who receives the report (Danish authority where relevant)
+#
+# Simplifications, stated in the app: weekend and bank holiday relief (DORA RTS Art. 5(4)) is not applied,
+# and chained deadlines assume the earlier report was sent at its deadline. Report earlier when you can.
+
+incident_questions:
+  - id: i_personal_data
+    text: Personal data breach
+    help: Personal data was lost, changed, disclosed or made unavailable, by accident or unlawfully (GDPR Art. 4(12)).
+  - id: i_high_risk_people
+    text: The breach is likely to result in a high risk to the people affected
+    show_if: i_personal_data
+  - id: i_significant
+    text: Significant incident under NIS2
+    help: It has caused or can cause severe operational disruption or financial loss, or considerable damage to others (NIS2 Art. 23(3)).
+  - id: i_major
+    text: Major ICT-related incident under DORA
+    help: Classified as major using the criteria in DORA Art. 18 and Delegated Regulation (EU) 2024/1772.
+  - id: i_ai_serious
+    text: Serious incident involving a high-risk AI system
+    help: Death or serious harm to health, serious and irreversible disruption of critical infrastructure, infringement of fundamental rights obligations, or serious harm to property or the environment (AI Act Art. 3(49)).
+  - id: i_ai_kind
+    text: Type of AI incident
+    show_if: i_ai_serious
+    options:
+      - {id: other, label: Other serious incident}
+      - {id: widespread, label: "Widespread infringement, or serious disruption of critical infrastructure"}
+      - {id: death, label: A person has died}
+
+clocks:
+  # --- GDPR -------------------------------------------------------------------------
+  - id: gdpr_authority
+    regime: gdpr
+    when: i_personal_data
+    report: Notify Datatilsynet of the personal data breach
+    after: aware
+    hours: 72
+    to: Datatilsynet
+    note: Not needed if the breach is unlikely to result in a risk to people. If you are late, give the reasons for the delay. A processor must tell the controller without undue delay.
+    cite: GDPR Art. 33(1), 33(2)
+
+  - id: gdpr_people
+    regime: gdpr
+    when: {all: [i_personal_data, i_high_risk_people]}
+    report: Tell the people affected
+    after: aware
+    asap: true
+    to: The people affected
+    note: Without undue delay, in clear language.
+    cite: GDPR Art. 34
+
+  # --- NIS2 -------------------------------------------------------------------------
+  - id: nis2_early_warning
+    regime: nis2
+    when: i_significant
+    report: Early warning
+    after: aware
+    hours: 24
+    to: The Danish CSIRT, via the national reporting solution
+    note: Say whether you suspect unlawful or malicious acts, and whether the incident could have cross-border impact.
+    cite: NIS2 Art. 23(4)(a)
+
+  - id: nis2_notification
+    regime: nis2
+    when: i_significant
+    report: Incident notification
+    after: aware
+    hours: 72
+    to: The Danish CSIRT, via the national reporting solution
+    note: Update the early warning with an initial assessment of severity and impact, and indicators of compromise where available.
+    cite: NIS2 Art. 23(4)(b)
+
+  - id: nis2_final
+    regime: nis2
+    when: i_significant
+    report: Final report
+    after: nis2_notification
+    months: 1
+    to: The Danish CSIRT, via the national reporting solution
+    note: A progress report instead if the incident is still ongoing, with the final report within one month of handling it.
+    cite: NIS2 Art. 23(4)(d), (e)
+
+  # --- DORA -------------------------------------------------------------------------
+  - id: dora_initial
+    regime: dora
+    when: i_major
+    report: Initial notification
+    after: classified
+    hours: 4
+    or_hours_after_aware: 24
+    to: Finanstilsynet
+    note: Within 4 hours of classifying the incident as major, and no later than 24 hours after becoming aware of it.
+    cite: DORA Art. 19(4)(a); Delegated Regulation (EU) 2025/301 Art. 5(1)(a)
+
+  - id: dora_intermediate
+    regime: dora
+    when: i_major
+    report: Intermediate report
+    after: dora_initial
+    hours: 72
+    to: Finanstilsynet
+    note: Update it without undue delay when the status changes, and when regular activities have been recovered.
+    cite: DORA Art. 19(4)(b); Delegated Regulation (EU) 2025/301 Art. 5(1)(b)
+
+  - id: dora_final
+    regime: dora
+    when: i_major
+    report: Final report
+    after: dora_intermediate
+    months: 1
+    to: Finanstilsynet
+    note: Counted from the latest updated intermediate report.
+    cite: DORA Art. 19(4)(c); Delegated Regulation (EU) 2025/301 Art. 5(1)(c)
+
+  # --- AI Act -----------------------------------------------------------------------
+  - id: ai_inform_provider
+    regime: ai_act
+    when: {all: [i_ai_serious, {not: ai_role=provider}]}
+    report: Inform the provider of the AI system
+    after: aware
+    asap: true
+    to: The provider, then importer or distributor and the market surveillance authority
+    note: As a deployer you must inform the provider immediately. If you cannot reach the provider, the reporting duty in Art. 73 applies to you.
+    cite: AI Act Art. 26(5), 73
+    applies_from: 2027-12-02
+
+  - id: ai_report_other
+    regime: ai_act
+    when: {all: [i_ai_serious, {not: {any: [i_ai_kind=widespread, i_ai_kind=death]}}]}
+    report: Serious incident report (provider duty)
+    after: aware
+    days: 15
+    to: Market surveillance authority (in Denmark generally Digitaliseringsstyrelsen)
+    note: The provider reports immediately after establishing a causal link, or a reasonable likelihood of one. An incomplete first report is allowed.
+    cite: AI Act Art. 73(2), 73(5)
+    applies_from: 2027-12-02
+
+  - id: ai_report_widespread
+    regime: ai_act
+    when: {all: [i_ai_serious, i_ai_kind=widespread]}
+    report: Serious incident report (provider duty)
+    after: aware
+    days: 2
+    to: Market surveillance authority (in Denmark generally Digitaliseringsstyrelsen)
+    note: Widespread infringement, or serious and irreversible disruption of critical infrastructure.
+    cite: AI Act Art. 73(3)
+    applies_from: 2027-12-02
+
+  - id: ai_report_death
+    regime: ai_act
+    when: {all: [i_ai_serious, i_ai_kind=death]}
+    report: Serious incident report (provider duty)
+    after: aware
+    days: 10
+    to: Market surveillance authority (in Denmark generally Digitaliseringsstyrelsen)
+    note: Report immediately once a causal link is established or suspected.
+    cite: AI Act Art. 73(4)
+    applies_from: 2027-12-02

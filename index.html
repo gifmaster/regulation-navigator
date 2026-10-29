@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Regulation Navigator</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@stlite/browser@1.12.0/build/stlite.css" />
+    <style>
+      #loading { font-family: system-ui, sans-serif; max-width: 36rem; margin: 4rem auto; padding: 0 1rem; color: #333; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>This app runs Python in your browser and needs JavaScript.</noscript>
+    <script type="module">
+      import { mount } from "https://cdn.jsdelivr.net/npm/@stlite/browser@1.12.0/build/stlite.js";
+      const files = {
+        "app.py": {
+                "url": "app/app.py"
+        },
+        "NOTICE": {
+                "url": "app/NOTICE"
+        },
+        "LICENSE": {
+                "url": "app/LICENSE"
+        },
+        "tests/acceptance_cases.yaml": {
+                "url": "app/tests/acceptance_cases.yaml"
+        },
+        "src/navigator/__init__.py": {
+                "url": "app/src/navigator/__init__.py"
+        },
+        "src/navigator/engine.py": {
+                "url": "app/src/navigator/engine.py"
+        },
+        "src/navigator/fonts/DejaVuSans-Bold.ttf": {
+                "url": "app/src/navigator/fonts/DejaVuSans-Bold.ttf"
+        },
+        "src/navigator/fonts/DejaVuSans-BoldOblique.ttf": {
+                "url": "app/src/navigator/fonts/DejaVuSans-BoldOblique.ttf"
+        },
+        "src/navigator/fonts/DejaVuSans-Oblique.ttf": {
+                "url": "app/src/navigator/fonts/DejaVuSans-Oblique.ttf"
+        },
+        "src/navigator/fonts/DejaVuSans.ttf": {
+                "url": "app/src/navigator/fonts/DejaVuSans.ttf"
+        },
+        "src/navigator/fonts/LICENSE-DejaVu.txt": {
+                "url": "app/src/navigator/fonts/LICENSE-DejaVu.txt"
+        },
+        "src/navigator/incidents.py": {
+                "url": "app/src/navigator/incidents.py"
+        },
+        "src/navigator/pdf.py": {
+                "url": "app/src/navigator/pdf.py"
+        },
+        "src/navigator/report.py": {
+                "url": "app/src/navigator/report.py"
+        },
+        "src/navigator/rules/ai_act.yaml": {
+                "url": "app/src/navigator/rules/ai_act.yaml"
+        },
+        "src/navigator/rules/dora.yaml": {
+                "url": "app/src/navigator/rules/dora.yaml"
+        },
+        "src/navigator/rules/gdpr.yaml": {
+                "url": "app/src/navigator/rules/gdpr.yaml"
+        },
+        "src/navigator/rules/incidents.yaml": {
+                "url": "app/src/navigator/rules/incidents.yaml"
+        },
+        "src/navigator/rules/nis2.yaml": {
+                "url": "app/src/navigator/rules/nis2.yaml"
+        },
+        "src/navigator/rules/overlaps.yaml": {
+                "url": "app/src/navigator/rules/overlaps.yaml"
+        },
+        "src/navigator/rules/questions.yaml": {
+                "url": "app/src/navigator/rules/questions.yaml"
+        }
+};
+      mount(
+        {
+          entrypoint: "app.py",
+          requirements: ["pyyaml", "fpdf2"],
+          files,
+        },
+        document.getElementById("root"),
+      );
+    </script>
+  </body>
+</html>

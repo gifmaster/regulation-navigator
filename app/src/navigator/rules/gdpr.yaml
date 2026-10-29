@@ -1,0 +1,110 @@
+# GDPR: Regulation (EU) 2016/679, and the Danish Data Protection Act (databeskyttelsesloven).
+#
+# The main question here is whether the AI use case needs a data protection impact assessment (DPIA).
+# GDPR Art. 35(3) lists three cases where it is always required. The EDPB guidelines (WP248 rev.01)
+# add nine criteria: processing that meets two or more of them in most cases needs a DPIA.
+# Datatilsynet also publishes a Danish list of processing that always needs a DPIA (Art. 35(4)).
+# Check it as well: this file does not reproduce it.
+#
+# Proposed changes in the Digital Omnibus (2025-2026) are not applied here until they are adopted.
+
+title: GDPR
+short: GDPR
+source: Regulation (EU) 2016/679; Danish Data Protection Act
+authority: Datatilsynet
+default_reason: No personal data.
+
+rules:
+  - id: gdpr.no_personal_data
+    when: {not: pd}
+    status: not_applicable
+    title: No personal data
+    reason: You said the use case does not process personal data. Check again if it uses names, emails, customer records, employee data, voice or images of people.
+    cite: Art. 2(1), 4(1)
+
+  - id: gdpr.dpia_profiling
+    when: {all: [pd_evaluation, pd_automated]}
+    status: applies
+    title: GDPR applies, DPIA required
+    reason: Systematic and extensive evaluation of people based on automated processing, with decisions that have legal or similarly significant effects.
+    cite: Art. 35(3)(a)
+
+  - id: gdpr.dpia_special
+    when: {all: [pd_special, pd_large_scale]}
+    status: applies
+    title: GDPR applies, DPIA required
+    reason: Large-scale processing of sensitive or criminal data.
+    cite: Art. 35(3)(b)
+
+  - id: gdpr.dpia_criteria
+    when: $wp248_criteria
+    status: applies
+    title: GDPR applies, DPIA required
+    reason: The processing meets two or more of the EDPB criteria for high risk. In most cases that requires a DPIA.
+    cite: Art. 35(1); EDPB WP248 rev.01
+
+  - id: gdpr.dpia_maybe
+    when: $wp248_one
+    status: applies
+    title: GDPR applies, DPIA probably not required
+    reason: The processing meets one EDPB criterion for high risk. A DPIA is usually not required, but check Datatilsynet's list and record why you decided.
+    cite: Art. 35(1); EDPB WP248 rev.01
+
+  - id: gdpr.applies
+    when: pd
+    status: applies
+    title: GDPR applies, DPIA not indicated
+    reason: None of the high-risk criteria apply, based on your answers.
+    cite: Art. 2(1)
+
+  # --- Duties -----------------------------------------------------------------------
+
+  - id: gdpr.dpia_duty
+    when: {any: [{all: [pd_evaluation, pd_automated]}, {all: [pd_special, pd_large_scale]}, $wp248_criteria]}
+    cite: Art. 35
+    obligations:
+      - text: Carry out a DPIA before the processing starts, and consult Datatilsynet if high risk remains
+        cite: Art. 35, 36
+
+  - id: gdpr.basics
+    when: pd
+    cite: Art. 5, 6, 13, 14, 30
+    obligations:
+      - text: Identify a legal basis for each purpose, including any new purpose the AI is used for
+        cite: Art. 5(1)(b), 6
+      - text: Tell people how their data is used in the AI use case
+        cite: Art. 13, 14
+      - text: Add the processing to your records of processing activities
+        cite: Art. 30
+      - text: Report personal data breaches to Datatilsynet within 72 hours where required
+        cite: Art. 33
+        tool: incident_clock
+
+  - id: gdpr.special
+    when: pd_special
+    cite: Art. 9, 10
+    obligations:
+      - text: Find a condition in Art. 9 for sensitive data, or a legal basis for criminal data
+        cite: Art. 9, 10; Danish Data Protection Act §§ 7, 8
+
+  - id: gdpr.automated
+    when: pd_automated
+    cite: Art. 22
+    obligations:
+      - text: Automated decisions with legal or similar effects need an exception in Art. 22(2), the right to human intervention, and information about the logic involved
+        cite: Art. 13(2)(f), 22
+
+  - id: gdpr.vendor
+    when: {all: [pd, ai_vendor]}
+    cite: Art. 28
+    obligations:
+      - text: Sign a data processing agreement with the AI vendor, and check whether the vendor may use your data for its own purposes such as training
+        cite: Art. 28
+        tool: contract_checker
+
+  - id: gdpr.transfers
+    when: pd_outside_eu
+    cite: Chapter V
+    obligations:
+      - text: Base any transfer outside the EU/EEA on an adequacy decision or standard contractual clauses, with a transfer assessment where needed
+        cite: Art. 44 to 49

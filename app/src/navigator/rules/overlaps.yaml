@@ -1,0 +1,86 @@
+# Where the regulations meet.
+#
+# These rules do not decide anything. They point out where one piece of work can serve several laws,
+# or where one event starts several clocks. That is where most of the saving is for a small organisation.
+# Conditions may refer to the results above: @ai_act, @gdpr, @dora, @nis2 mean "applies".
+
+title: Where they overlap
+short: Overlaps
+source: Cross-references between the regulations
+authority: ""
+
+rules:
+  - id: overlap.dpia_and_ai_act
+    when: {all: [ai_tier=high, '@gdpr']}
+    title: One assessment for two laws
+    reason: As a deployer of high-risk AI you must use the provider's information when you carry out your DPIA. Do the DPIA with the AI Act documentation in hand, not as a separate project.
+    cite: AI Act Art. 26(9), 13; GDPR Art. 35
+    obligations:
+      - text: Ask the AI provider for the instructions for use and use them in the DPIA
+        cite: AI Act Art. 26(9)
+
+  - id: overlap.fria_dpia
+    when: {all: [$fria, '@gdpr']}
+    title: The FRIA builds on the DPIA
+    reason: Where a DPIA already covers some of the fundamental rights impact assessment, the FRIA complements it. Plan them together.
+    cite: AI Act Art. 27(4); GDPR Art. 35
+    obligations:
+      - text: Run the DPIA and the fundamental rights impact assessment as one piece of work
+        cite: AI Act Art. 27(4)
+
+  - id: overlap.dora_ai_vendor
+    when: {all: ['@dora', ai_vendor, {not: ai_tier=out_of_scope}]}
+    title: Your AI vendor is a DORA ICT third-party service provider
+    reason: Every AI tool a financial entity buys is an ICT service. It belongs in the DORA register of information, its contract must contain the DORA Art. 30 terms, and the same contract should give you what you need for your AI Act duties.
+    cite: DORA Art. 28, 30; AI Act Art. 26(1)
+    obligations:
+      - text: Review the AI contract once against DORA, GDPR and the AI Act
+        cite: DORA Art. 30; GDPR Art. 28; AI Act Art. 26
+        tool: contract_checker_dora
+
+  - id: overlap.nis2_ai_vendor
+    when: {all: ['@nis2', ai_vendor]}
+    title: AI tools are part of your NIS2 supply chain
+    reason: Security of the supply chain is one of the NIS2 minimum measures. AI services bring their own risks, such as data leaking into prompts or answers, prompt injection and staff using tools nobody approved.
+    cite: NIS2 Art. 21(2)(d); AI Act Art. 26
+    obligations:
+      - text: Keep one register of AI use cases and vendors that serves both AI governance and NIS2 supply chain security
+        cite: NIS2 Art. 21(2)(d), (i)
+        tool: register
+
+  - id: overlap.incident_clocks
+    when: {at_least: {n: 2, of: ['@gdpr', '@nis2', '@dora', ai_tier=high]}}
+    title: One incident, several clocks
+    reason: An incident involving the AI system can be a personal data breach, a significant or major ICT incident and an AI incident at the same time, each with its own deadline and recipient. Agree in advance who reports what.
+    cite: GDPR Art. 33; NIS2 Art. 23; DORA Art. 19; AI Act Art. 26(5), 73
+    obligations:
+      - text: Write one incident procedure that covers every reporting duty, and test it in a tabletop exercise
+        cite: GDPR Art. 33; NIS2 Art. 23; DORA Art. 19
+        tool: incident_clock
+
+  - id: overlap.management_training
+    when: {all: [{any: ['@nis2', '@dora']}, $ai_in_scope]}
+    title: One training for the management body
+    reason: NIS2 and DORA require the management body to understand cyber and ICT risk, and the AI Act requires AI literacy. Cover AI risk in the same training.
+    cite: NIS2 Art. 20(2); DORA Art. 5(4); AI Act Art. 4
+    obligations:
+      - text: Combine management training on cyber and ICT risk with AI literacy
+        cite: NIS2 Art. 20(2); DORA Art. 5(4); AI Act Art. 4
+
+  - id: overlap.automated_decisions
+    when: {all: [ai_tier=high, pd_automated]}
+    title: Automated decisions under two laws
+    reason: GDPR gives people rights against decisions based solely on automated processing, and the AI Act gives a right to an explanation and requires human oversight for high-risk systems. Design the human review once so it satisfies both.
+    cite: GDPR Art. 22; AI Act Art. 14, 26(2), 86
+    obligations:
+      - text: Design one human review step that meets GDPR Art. 22 and AI Act human oversight
+        cite: GDPR Art. 22; AI Act Art. 26(2)
+
+  - id: overlap.logs
+    when: {all: [ai_tier=high, '@gdpr']}
+    title: Log retention pulls two ways
+    reason: The AI Act requires deployers to keep logs for at least six months, while GDPR requires personal data to be kept no longer than necessary. Set one retention period and document why.
+    cite: AI Act Art. 26(6); GDPR Art. 5(1)(e)
+    obligations:
+      - text: Set and document a retention period for AI logs that meets both
+        cite: AI Act Art. 26(6); GDPR Art. 5(1)(e)

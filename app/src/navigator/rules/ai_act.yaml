@@ -1,0 +1,150 @@
+# EU AI Act: Regulation (EU) 2024/1689, as amended by the Digital Omnibus on AI, Regulation (EU) 2026/1744.
+#
+# The Navigator does not classify the AI system itself. That is the job of the EU AI Act Risk Check,
+# which asks about 45 questions. Here the risk tier is taken as an input and turned into duties.
+#
+# Read top to bottom: the first rule with a status decides. Every matching rule adds its obligations.
+
+title: EU AI Act
+short: AI Act
+source: Regulation (EU) 2024/1689, as amended by Regulation (EU) 2026/1744
+authority: "Digitaliseringsstyrelsen (market surveillance and single point of contact), Datatilsynet, Domstolsstyrelsen"
+default_reason: The risk tier has not been set.
+
+rules:
+  - id: ai.unknown
+    when: {any: [ai_tier=unknown, {not: {any: [ai_tier=prohibited, ai_tier=high, ai_tier=limited, ai_tier=minimal, ai_tier=out_of_scope]}}]}
+    status: check
+    title: Classify the AI system first
+    reason: The duties depend on the risk tier. Classify the use case, then come back.
+    cite: Art. 5, 6, 50
+    obligations:
+      - text: Classify the AI system under the EU AI Act
+        cite: Art. 5, 6, 50; Annex I and III
+        tool: risk_check
+
+  - id: ai.out_of_scope
+    when: ai_tier=out_of_scope
+    status: not_applicable
+    title: Out of scope
+    reason: Based on the classification, the AI Act does not apply to this use.
+    cite: Art. 2
+
+  - id: ai.prohibited
+    when: ai_tier=prohibited
+    status: applies
+    title: Prohibited practice
+    reason: This practice is banned in the EU. It must not be used.
+    cite: Art. 5
+    obligations:
+      - text: Stop using the system for this purpose and retire it
+        cite: Art. 5, Art. 99(3)
+
+  - id: ai.high_provider
+    when: {all: [ai_tier=high, ai_role=provider]}
+    status: applies
+    title: High risk, provider duties
+    reason: You develop a high-risk AI system and put it on the market under your name.
+    cite: Art. 6, 16
+    obligations:
+      - text: Risk management system, data governance, technical documentation and logging
+        cite: Art. 9 to 12
+        applies_from: 2027-12-02
+      - text: Instructions for use, human oversight by design, accuracy and robustness
+        cite: Art. 13 to 15
+        applies_from: 2027-12-02
+      - text: Quality management system, conformity assessment, CE marking and EU database registration
+        cite: Art. 16, 17, 43, 48, 49
+        applies_from: 2027-12-02
+      - text: Post-market monitoring and reporting of serious incidents
+        cite: Art. 72, 73
+        applies_from: 2027-12-02
+
+  - id: ai.high_deployer
+    when: $high_deployer
+    status: applies
+    title: High risk, deployer duties
+    reason: You use a high-risk AI system under your authority.
+    cite: Art. 6, 26
+    obligations:
+      - text: Use the system according to the provider's instructions for use
+        cite: Art. 26(1)
+        applies_from: 2027-12-02
+      - text: Assign human oversight to people with the competence, training and authority to do it
+        cite: Art. 26(2)
+        applies_from: 2027-12-02
+      - text: Make sure input data under your control is relevant and representative
+        cite: Art. 26(4)
+        applies_from: 2027-12-02
+      - text: Monitor operation, inform the provider of risks and serious incidents, and suspend use where needed
+        cite: Art. 26(5)
+        applies_from: 2027-12-02
+      - text: Keep the logs the system generates for at least six months
+        cite: Art. 26(6)
+        applies_from: 2027-12-02
+      - text: Inform workers' representatives and affected workers before using it at work
+        cite: Art. 26(7)
+        applies_from: 2027-12-02
+      - text: Inform people that decisions about them are made with the help of a high-risk AI system, and explain individual decisions on request
+        cite: Art. 26(11), 86
+        applies_from: 2027-12-02
+      - text: Record the system and its classification in your AI register
+        cite: Art. 26; framework practice
+        tool: register
+
+  - id: ai.limited
+    when: ai_tier=limited
+    status: applies
+    title: Transparency obligations
+    reason: People must be told they are dealing with AI, or that content is AI-generated.
+    cite: Art. 50
+    obligations:
+      - text: Tell people when they interact with an AI system, unless it is obvious (provider duty, check your vendor does it)
+        cite: Art. 50(1)
+        applies_from: 2026-08-02
+      - text: Disclose deep fakes, and AI-generated text published to inform the public unless a person has reviewed it and takes editorial responsibility
+        cite: Art. 50(4)
+        applies_from: 2026-08-02
+      - text: Inform people exposed to emotion recognition or biometric categorisation
+        cite: Art. 50(3)
+        applies_from: 2026-08-02
+
+  - id: ai.minimal
+    when: ai_tier=minimal
+    status: applies
+    title: Minimal risk
+    reason: No specific requirements for the system beyond AI literacy. Voluntary codes of conduct are encouraged.
+    cite: Art. 4, 95
+
+  # --- Rules without a status: they add duties to the result above ------------------
+
+  - id: ai.fria
+    when: $fria
+    cite: Art. 27
+    obligations:
+      - text: Carry out a fundamental rights impact assessment before first use, and notify the market surveillance authority of the result
+        cite: Art. 27(1), 27(3)
+        applies_from: 2027-12-02
+
+  - id: ai.public_registration
+    when: {all: [$high_deployer, {any: [public_central, public_other]}]}
+    cite: Art. 26(8), 49(3)
+    obligations:
+      - text: As a public body, register your use of the high-risk system in the EU database before use
+        cite: Art. 26(8), 49(3)
+        applies_from: 2027-12-02
+
+  - id: ai.vendor_terms
+    when: {all: [ai_vendor, {any: [ai_tier=high, ai_tier=limited]}]}
+    cite: Art. 13, 26(1)
+    obligations:
+      - text: Make sure the vendor contract gives you the instructions for use and information you need for your duties
+        cite: Art. 13, 26(1)
+        tool: contract_checker
+
+  - id: ai.literacy
+    when: {any: [ai_tier=prohibited, ai_tier=high, ai_tier=limited, ai_tier=minimal]}
+    cite: Art. 4
+    obligations:
+      - text: Take measures so staff who operate or use AI systems have sufficient AI literacy
+        cite: Art. 4

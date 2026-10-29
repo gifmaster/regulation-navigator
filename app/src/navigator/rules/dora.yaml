@@ -1,0 +1,112 @@
+# DORA: Regulation (EU) 2022/2554 on digital operational resilience for the financial sector.
+# Applies from 17 January 2025.
+#
+# Order matters: the first rule with a status decides. Entity types that cannot be exempted come first,
+# then the types that can be exempted under Art. 2(3), then the exemptions themselves.
+# Member State options under Art. 2(4) are not covered.
+
+title: DORA
+short: DORA
+source: Regulation (EU) 2022/2554
+authority: Finanstilsynet
+default_reason: Not a financial entity under DORA Art. 2(1).
+
+rules:
+  - id: dora.not_financial
+    when: {not: $financial}
+    status: not_applicable
+    title: Not a financial entity
+    reason: DORA applies to the financial entities listed in Art. 2(1). Your AI vendors may still be affected if they serve financial entities.
+    cite: Art. 2(1)
+
+  - id: dora.always_in_scope
+    when: {any: [f_bank, f_payment, f_crypto, f_infrastructure]}
+    status: applies
+    title: Financial entity under DORA
+    reason: Your entity type is listed in Art. 2(1) and none of the exemptions in Art. 2(3) apply to it.
+    cite: Art. 2(1)
+
+  - id: dora.investment
+    when: {all: [f_investment, {not: f_small_aifm}]}
+    status: applies
+    title: Financial entity under DORA
+    reason: Investment firms, fund managers and crowdfunding service providers are listed in Art. 2(1).
+    cite: Art. 2(1)(e), (k), (l), (s)
+
+  - id: dora.insurer
+    when: {all: [f_insurer, {not: f_small_insurer}]}
+    status: applies
+    title: Financial entity under DORA
+    reason: Insurance and reinsurance undertakings are listed in Art. 2(1).
+    cite: Art. 2(1)(n)
+
+  - id: dora.pension
+    when: {all: [f_pension, {not: f_small_pension}]}
+    status: applies
+    title: Financial entity under DORA
+    reason: Institutions for occupational retirement provision are listed in Art. 2(1).
+    cite: Art. 2(1)(p)
+
+  - id: dora.intermediary
+    when: {all: [f_intermediary, $large]}
+    status: applies
+    title: Financial entity under DORA
+    reason: Insurance intermediaries are in scope unless they are micro, small or medium-sized.
+    cite: Art. 2(1)(o), 2(3)(e)
+
+  - id: dora.exempt
+    when: $financial
+    status: not_applicable
+    title: Exempt from DORA
+    reason: "Your entity type is covered by an exemption in Art. 2(3): small fund managers under AIFMD Art. 3(2), small insurers outside Solvency II, pension funds with 15 members or fewer, or insurance intermediaries that are micro, small or medium-sized."
+    cite: Art. 2(3)
+
+  # --- Duties -----------------------------------------------------------------------
+
+  - id: dora.core
+    when: $financial
+    cite: Art. 5 to 19, 24, 28
+    obligations:
+      - text: The management body defines, approves and oversees the ICT risk management framework, and keeps its own ICT risk knowledge up to date
+        cite: Art. 5(2), 5(4)
+      - text: Include AI systems in your ICT risk management framework, asset inventory and business impact analysis
+        cite: Art. 6, 8, 11
+      - text: Classify ICT-related incidents and report major ones to Finanstilsynet (initial, intermediate and final report)
+        cite: Art. 17, 18, 19
+        tool: incident_clock
+      - text: Test your digital operational resilience at least yearly for ICT systems supporting critical or important functions
+        cite: Art. 24
+      - text: Train all staff and the management body in ICT security and digital operational resilience
+        cite: Art. 13(6)
+
+  - id: dora.vendor
+    when: {all: [$financial, ai_vendor]}
+    cite: Art. 28, 30
+    obligations:
+      - text: Add the AI vendor to your register of information on ICT third-party services, which is reported to Finanstilsynet
+        cite: Art. 28(3)
+        tool: register
+      - text: Assess the vendor and concentration risk before signing
+        cite: Art. 28(4), 29
+      - text: Make sure the contract contains the key contractual provisions of Art. 30(2)
+        cite: Art. 30(2)
+        tool: contract_checker_dora
+
+  - id: dora.vendor_critical
+    when: {all: [$financial, ai_vendor, ai_critical]}
+    cite: Art. 28, 30(3)
+    obligations:
+      - text: The contract also needs the provisions for critical or important functions, including audit rights, exit strategy and business continuity
+        cite: Art. 30(3)
+        tool: contract_checker_dora
+      - text: Have a tested exit strategy for the AI service
+        cite: Art. 28(8)
+      - text: Inform Finanstilsynet in good time about planned contracts for critical or important functions
+        cite: Art. 28(3)
+
+  - id: dora.proportionality
+    when: {all: [$financial, micro]}
+    cite: Art. 4, 16
+    obligations:
+      - text: Requirements apply in proportion to your size and risk. Microenterprises have lighter requirements in several articles, and some smaller entities follow the simplified framework in Art. 16
+        cite: Art. 4, 16
